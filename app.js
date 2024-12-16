@@ -8,7 +8,7 @@ app.use(express.static('public')); // Serve static files from the 'public' direc
 const SPREADSHEET_ID = '1GMIq1X234k00POpYZ90r5h4szDFkFk0BY50DKNv9mgA';
 const RANGE = 'Projects!A2:I'; // Extended range to include date and complexity
 const PORT = 3000;
-const DEBUG = true;
+const DEBUG = false;
 
 // Initialize Google Sheets API
 async function initGoogleSheetsAPI() {
