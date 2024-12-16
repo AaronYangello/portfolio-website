@@ -24,7 +24,6 @@ async function initGoogleSheetsAPI() {
       return;
     }
     console.log('printing ' + keyFile);
-    console.log(data);
   });
   const auth = new google.auth.GoogleAuth({
     keyFile: keyFile,
