@@ -98,7 +98,7 @@ function updateSortButtons() {
 
   techSet = new Set();
   projectsData.forEach(project => {
-    project[6].split(',').forEach(tech => {techSet.add(tech.trim());});
+    project[6].split(',').filter(tech => tech!== '').forEach(tech => {techSet.add(tech.trim());});
   });
   techArr = Array.from(techSet);
   techArr.sort();
@@ -133,7 +133,8 @@ function applyFiltersAndSort() {
   // Apply filter
   if (activeFilter !== 'All') {
     filteredProjects = filteredProjects.filter(project => {
-      const technologies = project[6].split(',').map(tech => tech.trim());
+      const technologies = project[6].split(',').map(tech => tech.trim()).filter(tech => tech!== '');
+      console.log("tech" + technologies);
       return technologies.includes(activeFilter);
     });
   }
@@ -181,24 +182,6 @@ function displayProjects(projects) {
       ${inProgress === 'TRUE' ? `<div class="progress-flag"><img src="${API_URL}/img/in_progress.png" alt="In Progress"></div>` : ''}
       <img src="${thumbnail}" alt="${name} thumbnail" class="project-image">
       <div class="project-info">
-        <h3 class="project-title">${name}</h3>
-        <p class="project-description">${description}</p>
-        <div class="project-links">
-          <a href="${repoUrl}" target="_blank" class="project-btn repo-btn">Repository</a>
-          <button class="project-btn demo-btn" ${inProgress==='TRUE' ? 'disabled' :
-            `onclick="window.open('${demoUrl}', '_blank')" `}>
-            Demo
-          </button>
-        </div>
-      </div>
-    </div>
-    `;
-
-    card.innerHTML = `
-    <div class="project-container">
-      ${inProgress === 'TRUE' ? `<div class="progress-flag"><img src="${API_URL}/img/in_progress.png" alt="In Progress"></div>` : ''}
-      <img src="${thumbnail}" alt="${name} thumbnail" class="project-image">
-      <div class="project-info">
         <h3 class="project-title">
           ${name}
           <img src="${API_URL}/img/complexity/${complexity}.png" alt="Complexity ${complexity}/6" class="complexity-icon"  title="Complexity level of the project: ${complexity}/6" aria-label="Complexity level of the project ${complexity} out of 6">
@@ -206,10 +189,10 @@ function displayProjects(projects) {
         <p class="project-description">${description}</p>
         <div class="project-links">
           <a href="${repoUrl}" target="_blank" class="project-btn repo-btn">Repository</a>
-          <button class="project-btn demo-btn" ${inProgress === 'TRUE' ? 'disabled' :
-            `onclick="window.open('${demoUrl}', '_blank')" `}>
+          ${demoUrl!== ''? 
+          `<button class="project-btn demo-btn" onclick="window.open('${demoUrl}', '_blank')">
             Demo
-          </button>
+          </button>` : ''}
         </div>
       </div>
     </div>
