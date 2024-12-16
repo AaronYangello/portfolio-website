@@ -4,11 +4,16 @@ const app = express();
 app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 app.use(express.static('public')); // Serve static files from the 'public' directory
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
-
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Methods', 'GET');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    if ('OPTIONS' == req.method) {
+       res.sendStatus(200);
+     }
+     else {
+       next();
+     }});
 const fs = require('fs');
 
 const SPREADSHEET_ID = '1GMIq1X234k00POpYZ90r5h4szDFkFk0BY50DKNv9mgA';
