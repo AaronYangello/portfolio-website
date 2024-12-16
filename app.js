@@ -8,11 +8,16 @@ app.use(express.static('public')); // Serve static files from the 'public' direc
 const SPREADSHEET_ID = '1GMIq1X234k00POpYZ90r5h4szDFkFk0BY50DKNv9mgA';
 const RANGE = 'Projects!A2:I'; // Extended range to include date and complexity
 const PORT = 3000;
+const DEBUG = true;
 
 // Initialize Google Sheets API
 async function initGoogleSheetsAPI() {
+  let keyFile = 'credentials.json';
+  if (DEBUG == false){
+    keyFile = '/etc/secrets/' + keyFile;
+  }
   const auth = new google.auth.GoogleAuth({
-    keyFile: 'credentials.json',
+    keyFile: keyFile,
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
   });
   const client = await auth.getClient();
