@@ -14,7 +14,6 @@ app.use(function(req, res, next) {
      else {
        next();
      }});
-const fs = require('fs');
 
 const SPREADSHEET_ID = '1GMIq1X234k00POpYZ90r5h4szDFkFk0BY50DKNv9mgA';
 const RANGE = 'Projects!A2:I'; // Extended range to include date and complexity
@@ -27,13 +26,7 @@ async function initGoogleSheetsAPI() {
   if (DEBUG == false){
     keyFile = '/etc/secrets/' + keyFile;
   }
-  fs.readFile(keyFile, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading file:', err);
-      return;
-    }
-    console.log('printing ' + keyFile);
-  });
+  
   const auth = new google.auth.GoogleAuth({
     keyFile: keyFile,
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
