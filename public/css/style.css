@@ -38,7 +38,16 @@ body {
   justify-content: space-between;
   align-items: center;
 }
-
+.nav-links a.active {
+  color: var(--secondary);
+  border-bottom: 2px solid var(--secondary);
+  padding-bottom: 5px;
+  font-weight: bold;
+}
+.nav-links a.active:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--secondary);
+}
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
@@ -58,7 +67,7 @@ body {
 }
 
 .hero {
-  height: 40vh;
+  height: 20vh;
   display: flex;
   align-items: center;
   justify-content: center;
