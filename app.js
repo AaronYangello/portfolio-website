@@ -18,7 +18,7 @@ app.use(function(req, res, next) {
 const SPREADSHEET_ID = '1GMIq1X234k00POpYZ90r5h4szDFkFk0BY50DKNv9mgA';
 const RANGE = 'Projects!A2:I'; // Extended range to include date and complexity
 const PORT = 3000;
-const DEBUG = false;
+const DEBUG = true;
 
 // Initialize Google Sheets API
 async function initGoogleSheetsAPI() {

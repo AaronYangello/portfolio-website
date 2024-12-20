@@ -1,16 +1,16 @@
 <html>
   <head>
-    <base href="https://aaronyangello.com/">
-    <!-- <base href="http://localhost:3000/"> -->
+    <!-- <base href="https://aaronyangello.com/"> -->
+    <base href="http://localhost:3000/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aaron Yangello | Software Engineer</title>
 
-    <link rel="icon" type="image/x-icon" href="https://www.aaronyangello.com/img/favicon.ico">
-    <!-- <link rel="icon" type="image/x-icon" href="http://localhost:3000/img/favicon.ico"> -->
+    <!-- <link rel="icon" type="image/x-icon" href="https://www.aaronyangello.com/img/favicon.ico"> -->
+    <link rel="icon" type="image/x-icon" href="http://localhost:3000/img/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://www.aaronyangello.com/css/style.css" rel="stylesheet">
-    <!-- <link href="http://localhost:3000/css/style.css" rel="stylesheet"> -->
+    <!-- <link href="https://www.aaronyangello.com/css/style.css" rel="stylesheet"> -->
+    <link href="http://localhost:3000/css/style.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   </head>
 <body>
@@ -168,7 +168,9 @@ function displayProjects(projects) {
 
   projects.forEach(project => {
     const [name, description, thumbnail, repoUrl, demoUrl, inProgress, technologies, date, complexity] = project;
-    
+    const filteredTech = project[6].split(',').map(tech => tech.trim()).filter(tech => tech!== '');
+    const formattedDate = new Date(date).toLocaleString('en-GB', { day: '2-digit', month:'short', year: 'numeric' });
+
     const card = document.createElement('div');
     card.className = 'project-card';
     
@@ -188,6 +190,11 @@ function displayProjects(projects) {
           ${name}
           <img src="${API_URL}/img/complexity/${complexity}.png" alt="Complexity ${complexity}/6" class="complexity-icon"  title="Complexity level of the project: ${complexity}/6" aria-label="Complexity level of the project ${complexity} out of 6">
         </h3>
+         ${filteredTech.length > 0? `
+        <ul class="project-technologies">
+          ${filteredTech.map(tech => `<li>${tech}</li>`).join('')}
+        </ul>
+      ` : ''}
         <p class="project-description">${description}</p>
         <div class="project-links">
           <a href="${repoUrl}" target="_blank" class="project-btn repo-btn">Repository</a>
@@ -196,6 +203,7 @@ function displayProjects(projects) {
             Demo
           </button>` : ''}
         </div>
+        <p class="last-updated"><i>Last Updated: ${formattedDate}</i></p>
       </div>
     </div>
     `;
