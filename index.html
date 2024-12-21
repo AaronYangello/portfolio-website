@@ -197,8 +197,9 @@ function displayProjects(projects) {
       ` : ''}
         <p class="project-description">${description}</p>
         <div class="project-links">
-          <a href="${repoUrl}" target="_blank" class="project-btn repo-btn">Repository</a>
-          ${demoUrl!== ''? 
+          ${repoUrl !== '' ?
+          `<a href="${repoUrl}" target="_blank" class="project-btn repo-btn">Repository</a>`:''}
+          ${demoUrl !== '' ? 
           `<button class="project-btn demo-btn" onclick="window.open('${demoUrl}', '_blank')">
             Demo
           </button>` : ''}
