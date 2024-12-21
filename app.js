@@ -1,5 +1,8 @@
 const express = require('express');
 const { google } = require('googleapis');
+const ejs = require('ejs');
+const dotenv = require('dotenv');
+dotenv.config();
 const app = express();
 app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
@@ -15,20 +18,17 @@ app.use(function(req, res, next) {
        next();
      }});
 
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 const SPREADSHEET_ID = '1GMIq1X234k00POpYZ90r5h4szDFkFk0BY50DKNv9mgA';
 const RANGE = 'Projects!A2:I'; // Extended range to include date and complexity
 const PORT = 3000;
-const DEBUG = true;
 
 // Initialize Google Sheets API
 async function initGoogleSheetsAPI() {
-  let keyFile = 'credentials.json';
-  if (DEBUG == false){
-    keyFile = '/etc/secrets/' + keyFile;
-  }
-  
   const auth = new google.auth.GoogleAuth({
-    keyFile: keyFile,
+    keyFile: process.env.GOOGLE_API_KEY,
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
   });
   const client = await auth.getClient();
@@ -51,8 +51,10 @@ async function loadProjects() {
   }
 }
 
-app.get('/', (req, res) => { 
-  res.sendFile('index.html', {root: __dirname}); 
+app.get('/', async (req, res) => { 
+  const projectsData = await loadProjects();
+  const base_url = process.env.BASE_URL;
+  res.render('index', {root: __dirname, base_url:base_url, projects: JSON.stringify(projectsData[0])}); 
 });
 
 // Endpoint to serve projects data

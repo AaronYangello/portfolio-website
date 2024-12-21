@@ -1,0 +1,194 @@
+<html>
+  <head>
+    <base href="<%= base_url %>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aaron Yangello | Software Engineer</title>
+
+    <link rel="icon" type="image/x-icon" href="<%= base_url %>/img/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="<%= base_url %>/css/style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  </head>
+<body>
+
+<nav class="nav">
+  <div class="nav-content">
+    <a href="/" class="logo">AY</a>
+    <div class="nav-links">
+      <a href="#projects" class="active">Projects</a>
+      <!--<a href="#blog">Blog</a>-->
+      <a href="https://linkedin.com/in/aaronyangello" target="_blank">LinkedIn</a>
+      <a href="https://github.com/aaronyangello" target="_blank">GitHub</a>
+      <a href="/resume.pdf" target="_blank">Resume</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>Aaron Yangello</h1>
+    <p>Software Engineer crafting elegant solutions to complex problems</p>
+  </div>
+</section>
+
+<section id="projects" class="projects">
+  <div class="project-controls">
+    <div class="sort-controls">
+      <label for="sortBy">Sort by:</label>
+      <select id="sortBy" class="sort-select">
+        <option value="complexity">Complexity</option>
+        <option value="date">Date</option>
+        <option value="name">Name</option>
+      </select>
+      <label for="sortOrder">Order:</label>
+      <select id="sortOrder" class="sort-select">
+        <option value="desc">Descending</option>
+        <option value="asc">Ascending</option>
+      </select>
+    </div>
+    <div class="filters" id="sortButtons">
+      <button class="filter-btn active">All</button>
+    </div>
+  </div>
+  <div class="project-grid" id="projectGrid">
+    <!-- Projects will be dynamically populated -->
+  </div>
+</section>
+
+<section id="blog" class="blog">
+  <div id="blogPosts">
+    <!-- Blog posts will be dynamically populated -->
+  </div>
+</section>
+
+<section class="contact">
+  <h2>Get in Touch</h2>
+  <p>Email me at <a href="mailto:ayangello@gmail.com">ayangello@gmail.com</a></p>
+</section>
+
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+  projectsData = JSON.parse('<%- projects %>');
+  updateSortButtons();
+  applyFiltersAndSort();
+
+  function updateSortButtons() {
+    const sortButtons = document.getElementById('sortButtons');
+    sortButtons.innerHTML = '<button class="filter-btn active">All</button>';
+
+    techSet = new Set();
+    projectsData.forEach(project => {
+      project[6].split(',').filter(tech => tech!== '').forEach(tech => {techSet.add(tech.trim());});
+    });
+    techArr = Array.from(techSet);
+    techArr.sort();
+    techArr.forEach(t => {
+      const button = document.createElement('button');
+      button.className = 'filter-btn';
+      button.innerHTML = t;
+      sortButtons.appendChild(button);
+    });
+
+    // Event Listeners
+    document.getElementById('sortBy').addEventListener('change', applyFiltersAndSort);
+    document.getElementById('sortOrder').addEventListener('change', applyFiltersAndSort);
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelector('.filter-btn.active').classList.remove('active');
+        this.classList.add('active');
+        applyFiltersAndSort();
+      });
+    });
+  }
+
+  // Sort and filter projects
+  function applyFiltersAndSort() {
+    const sortBy = document.getElementById('sortBy').value;
+    const sortOrder = document.getElementById('sortOrder').value;
+    const activeFilter = document.querySelector('.filter-btn.active').textContent;
+    
+    let filteredProjects = [...projectsData];
+    
+    // Apply filter
+    if (activeFilter !== 'All') {
+      filteredProjects = filteredProjects.filter(project => {
+        const technologies = project[6].split(',').map(tech => tech.trim()).filter(tech => tech!== '');
+        console.log("tech" + technologies);
+        return technologies.includes(activeFilter);
+      });
+    }
+    
+    // Apply sort
+    filteredProjects.sort((a, b) => {
+      let compareResult = 0;
+      switch(sortBy) {
+        case 'date':
+          compareResult = new Date(b[7]) - new Date(a[7]);
+          break;
+        case 'complexity':
+          compareResult = parseInt(b[8]) - parseInt(a[8]);
+          break;
+        case 'name':
+          compareResult = a[0].localeCompare(b[0]);
+          break;
+      }
+      return sortOrder === 'asc' ? -compareResult : compareResult;
+    });
+    
+    displayProjects(filteredProjects);
+  }
+
+  // Display projects in the grid
+  function displayProjects(projects) {
+    const projectGrid = document.getElementById('projectGrid');
+    projectGrid.innerHTML = '';
+
+    projects.forEach(project => {
+      const [name, description, thumbnail, repoUrl, demoUrl, inProgress, technologies, date, complexity] = project;
+      const filteredTech = project[6].split(',').map(tech => tech.trim()).filter(tech => tech!== '');
+      const formattedDate = new Date(date).toLocaleString('en-GB', { day: '2-digit', month:'short', year: 'numeric' });
+
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      
+      if (inProgress === 'TRUE') {
+        const tag = document.createElement('div');
+        tag.className = 'in-progress';
+        tag.textContent = 'In Progress';
+        card.appendChild(tag);
+      }
+
+      card.innerHTML = `
+      <div class="project-container">
+        ${inProgress === 'TRUE' ? `<div class="progress-flag"><img src="${API_URL}/img/in_progress.png" alt="In Progress"></div>` : ''}
+        <img src="${thumbnail}" alt="${name} thumbnail" class="project-image">
+        <div class="project-info">
+          <h3 class="project-title">
+            ${name}
+            <img src="${API_URL}/img/complexity/${complexity}.png" alt="Complexity ${complexity}/6" class="complexity-icon"  title="Complexity level of the project: ${complexity}/6" aria-label="Complexity level of the project ${complexity} out of 6">
+          </h3>
+          ${filteredTech.length > 0? `
+          <ul class="project-technologies">
+            ${filteredTech.map(tech => `<li>${tech}</li>`).join('')}
+          </ul>
+        ` : ''}
+          <p class="project-description">${description}</p>
+          <div class="project-links">
+            <a href="${repoUrl}" target="_blank" class="project-btn repo-btn">Repository</a>
+            ${demoUrl!== ''? 
+            `<button class="project-btn demo-btn" onclick="window.open('${demoUrl}', '_blank')">
+              Demo
+            </button>` : ''}
+          </div>
+          <p class="last-updated"><i>Last Updated: ${formattedDate}</i></p>
+        </div>
+      </div>
+      `;
+      projectGrid.appendChild(card);
+    });
+  }
+</script>
+</body>
+</html>
