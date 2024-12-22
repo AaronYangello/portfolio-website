@@ -67,7 +67,7 @@ body {
 }
 
 .hero {
-  height: 30vh;
+  height: 50vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -312,12 +312,40 @@ body {
   object-fit: contain; /* Ensure the image is fully visible within the container */
 }
 
+.hamburger {
+  display: none;
+}
+
+/* Styles for mobile */
 @media (max-width: 768px) {
   .hero-content h1 {
     font-size: 2.5rem;
   }
-  
+
+  /* Hide the nav links by default on mobile */
   .nav-links {
     display: none;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  /* Display the hamburger icon */
+  .hamburger {
+    display: block;
+    cursor: pointer;
+    font-size: 2rem;
+    color: var(--primary);
+  }
+
+  /* Show the nav links when hamburger is clicked */
+  .nav-links.open {
+    display: flex;
+  }
+
+  /* Space out the links */
+  .nav-links a {
+    margin: 1rem 0;
   }
 }

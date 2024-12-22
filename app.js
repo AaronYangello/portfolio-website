@@ -3,6 +3,9 @@ const { google } = require('googleapis');
 const ejs = require('ejs');
 const dotenv = require('dotenv');
 dotenv.config();
+const fs = require('fs');
+const path = require('path');
+
 const app = express();
 app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
@@ -66,6 +69,18 @@ app.get('/projects', async (req, res) => {
     console.error('Error serving projects:', error);
     res.status(500).json({ message: 'Failed to load projects' });
   }
+});
+
+app.get('/resume', (req, res) => {
+  res.redirect(process.env.BASE_URL + '/resume.pdf');
+});
+
+app.get('/github', (req, res) => {
+  res.redirect('https://github.com/aaronyangello');
+});
+
+app.get('/linkedin', (req, res) => {
+  res.redirect('https://linkedin.com/in/aaronyangello');
 });
 
 app.listen(PORT, () => {

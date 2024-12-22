@@ -12,18 +12,21 @@
   </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-content">
-    <a href="/" class="logo">AY</a>
-    <div class="nav-links">
-      <a href="#projects" class="active">Projects</a>
-      <!--<a href="#blog">Blog</a>-->
-      <a href="https://linkedin.com/in/aaronyangello" target="_blank">LinkedIn</a>
-      <a href="https://github.com/aaronyangello" target="_blank">GitHub</a>
-      <a href="/resume.pdf" target="_blank">Resume</a>
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="/" class="logo">AY</a>
+      <div class="nav-links">
+        <a href="#projects" class="active">Projects</a>
+        <!--<a href="#blog">Blog</a>-->
+        <a href="https://linkedin.com/in/aaronyangello" target="_blank">LinkedIn</a>
+        <a href="https://github.com/aaronyangello" target="_blank">GitHub</a>
+        <a href="/resume.pdf" target="_blank">Resume</a>
+      </div>
+      <div class="hamburger" onclick="toggleNav()">
+        &#9776;
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
 <section class="hero">
   <div class="hero-content">
@@ -199,6 +202,12 @@
       projectGrid.appendChild(card);
     });
   }
+
+  function toggleNav() {
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('open');
+  }
+
 </script>
 </body>
 </html>
