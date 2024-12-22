@@ -69,9 +69,19 @@
 
 <script src="https://apis.google.com/js/api.js"></script>
 <script>
-  projectsData = JSON.parse('<%- projects %>');
-  updateSortButtons();
-  applyFiltersAndSort();
+  projectsData = [];
+  // Load projects from Google Sheets
+  function loadProjects() {
+    //TODO: Replace with server URL
+    $.get(`<%= base_url %>/projects`,
+      function(data, status){
+        projectsData = data;
+        updateSortButtons();
+        applyFiltersAndSort();
+      }
+    )
+  }
+  loadProjects();
 
   function updateSortButtons() {
     const sortButtons = document.getElementById('sortButtons');
@@ -162,12 +172,12 @@
 
       card.innerHTML = `
       <div class="project-container">
-        ${inProgress === 'TRUE' ? `<div class="progress-flag"><img src="${API_URL}/img/in_progress.png" alt="In Progress"></div>` : ''}
+        ${inProgress === 'TRUE' ? `<div class="progress-flag"><img src="<%= base_url %>/img/in_progress.png" alt="In Progress"></div>` : ''}
         <img src="${thumbnail}" alt="${name} thumbnail" class="project-image">
         <div class="project-info">
           <h3 class="project-title">
             ${name}
-            <img src="${API_URL}/img/complexity/${complexity}.png" alt="Complexity ${complexity}/6" class="complexity-icon"  title="Complexity level of the project: ${complexity}/6" aria-label="Complexity level of the project ${complexity} out of 6">
+            <img src="<%= base_url %>/img/complexity/${complexity}.png" alt="Complexity ${complexity}/6" class="complexity-icon"  title="Complexity level of the project: ${complexity}/6" aria-label="Complexity level of the project ${complexity} out of 6">
           </h3>
           ${filteredTech.length > 0? `
           <ul class="project-technologies">
