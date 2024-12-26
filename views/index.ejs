@@ -1,5 +1,14 @@
 <html>
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SY3S7PSGDY"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-SY3S7PSGDY');
+    </script>
+
     <base href="<%= base_url %>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,7 +79,6 @@
   <p>Email me at <a href="mailto:ayangello@gmail.com">ayangello@gmail.com</a></p>
 </section>
 
-<script src="https://apis.google.com/js/api.js"></script>
 <script>
   projectsData = [];
   // Load projects from Google Sheets
