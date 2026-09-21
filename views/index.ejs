@@ -1,6 +1,6 @@
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SY3S7PSGDY"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -8,214 +8,153 @@
       gtag('js', new Date());
       gtag('config', 'G-SY3S7PSGDY');
     </script>
-
-    <base href="<%= base_url %>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aaron Yangello | Software Engineer</title>
-
-    <link rel="icon" type="image/x-icon" href="<%= base_url %>/img/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link href="<%= base_url %>/css/style.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <meta name="description" content="Aaron Yangello is a software engineer building dependable systems, integrations, data products, and playful technical experiments.">
+    <meta name="theme-color" content="#111318">
+    <title>Aaron Yangello — Software Engineer</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/site.js" defer></script>
   </head>
-<body>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
 
-  <nav class="nav">
-    <div class="nav-content">
-      <a href="/" class="logo">AY</a>
-      <div class="nav-links">
-        <a href="#projects" class="active">Projects</a>
-        <!--<a href="#blog">Blog</a>-->
-        <a href="https://linkedin.com/in/aaronyangello" target="_blank">LinkedIn</a>
-        <a href="https://github.com/aaronyangello" target="_blank">GitHub</a>
-        <a href="/resume.pdf" target="_blank">Resume</a>
-      </div>
-      <div class="hamburger" onclick="toggleNav()">
-        &#9776;
-      </div>
-    </div>
-  </nav>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Aaron Yangello, home">
+        <span class="brand-mark">AY</span>
+        <span class="brand-role">AI-native engineer</span>
+      </a>
 
-<section class="hero">
-  <div class="hero-content">
-    <h1>Aaron Yangello</h1>
-    <p>Software Engineer crafting elegant solutions to complex problems</p>
-  </div>
-</section>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span>Menu</span>
+        <span class="menu-icon" aria-hidden="true"></span>
+      </button>
 
-<section id="projects" class="projects">
-  <div class="project-controls">
-    <div class="sort-controls">
-      <label for="sortBy">Sort by:</label>
-      <select id="sortBy" class="sort-select">
-        <option value="complexity">Complexity</option>
-        <option value="date">Date</option>
-        <option value="name">Name</option>
-      </select>
-      <label for="sortOrder">Order:</label>
-      <select id="sortOrder" class="sort-select">
-        <option value="desc">Descending</option>
-        <option value="asc">Ascending</option>
-      </select>
-    </div>
-    <div class="filters" id="sortButtons">
-      <button class="filter-btn active">All</button>
-    </div>
-  </div>
-  <div class="project-grid" id="projectGrid">
-    <!-- Projects will be dynamically populated -->
-  </div>
-</section>
+      <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+        <a href="#work">Work</a>
+        <a href="#archive">Archive</a>
+        <a href="/resume.pdf" target="_blank" rel="noopener">Résumé</a>
+        <a href="mailto:ayangello@gmail.com" class="nav-cta">Let’s talk</a>
+      </nav>
+    </header>
 
-<section id="blog" class="blog">
-  <div id="blogPosts">
-    <!-- Blog posts will be dynamically populated -->
-  </div>
-</section>
-
-<section class="contact">
-  <h2>Get in Touch</h2>
-  <p>Email me at <a href="mailto:ayangello@gmail.com">ayangello@gmail.com</a></p>
-</section>
-
-<script>
-  projectsData = [];
-  // Load projects from Google Sheets
-  function loadProjects() {
-    //TODO: Replace with server URL
-    $.get(`<%= base_url %>/projects`,
-      function(data, status){
-        projectsData = data;
-        updateSortButtons();
-        applyFiltersAndSort();
-      }
-    )
-  }
-  loadProjects();
-
-  function updateSortButtons() {
-    const sortButtons = document.getElementById('sortButtons');
-    sortButtons.innerHTML = '<button class="filter-btn active">All</button>';
-
-    techSet = new Set();
-    projectsData.forEach(project => {
-      project[6].split(',').filter(tech => tech!== '').forEach(tech => {techSet.add(tech.trim());});
-    });
-    techArr = Array.from(techSet);
-    techArr.sort();
-    techArr.forEach(t => {
-      const button = document.createElement('button');
-      button.className = 'filter-btn';
-      button.innerHTML = t;
-      sortButtons.appendChild(button);
-    });
-
-    // Event Listeners
-    document.getElementById('sortBy').addEventListener('change', applyFiltersAndSort);
-    document.getElementById('sortOrder').addEventListener('change', applyFiltersAndSort);
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelector('.filter-btn.active').classList.remove('active');
-        this.classList.add('active');
-        applyFiltersAndSort();
-      });
-    });
-  }
-
-  // Sort and filter projects
-  function applyFiltersAndSort() {
-    const sortBy = document.getElementById('sortBy').value;
-    const sortOrder = document.getElementById('sortOrder').value;
-    const activeFilter = document.querySelector('.filter-btn.active').textContent;
-    
-    let filteredProjects = [...projectsData];
-    
-    // Apply filter
-    if (activeFilter !== 'All') {
-      filteredProjects = filteredProjects.filter(project => {
-        const technologies = project[6].split(',').map(tech => tech.trim()).filter(tech => tech!== '');
-        console.log("tech" + technologies);
-        return technologies.includes(activeFilter);
-      });
-    }
-    
-    // Apply sort
-    filteredProjects.sort((a, b) => {
-      let compareResult = 0;
-      switch(sortBy) {
-        case 'date':
-          compareResult = new Date(b[7]) - new Date(a[7]);
-          break;
-        case 'complexity':
-          compareResult = parseInt(b[8]) - parseInt(a[8]);
-          break;
-        case 'name':
-          compareResult = a[0].localeCompare(b[0]);
-          break;
-      }
-      return sortOrder === 'asc' ? -compareResult : compareResult;
-    });
-    
-    displayProjects(filteredProjects);
-  }
-
-  // Display projects in the grid
-  function displayProjects(projects) {
-    const projectGrid = document.getElementById('projectGrid');
-    projectGrid.innerHTML = '';
-
-    projects.forEach(project => {
-      const [name, description, thumbnail, repoUrl, demoUrl, inProgress, technologies, date, complexity] = project;
-      const filteredTech = project[6].split(',').map(tech => tech.trim()).filter(tech => tech!== '');
-      const formattedDate = new Date(date).toLocaleString('en-GB', { day: '2-digit', month:'short', year: 'numeric' });
-
-      const card = document.createElement('div');
-      card.className = 'project-card';
-      
-      if (inProgress === 'TRUE') {
-        const tag = document.createElement('div');
-        tag.className = 'in-progress';
-        tag.textContent = 'In Progress';
-        card.appendChild(tag);
-      }
-
-      card.innerHTML = `
-      <div class="project-container">
-        ${inProgress === 'TRUE' ? `<div class="progress-flag"><img src="<%= base_url %>/img/in_progress.png" alt="In Progress"></div>` : ''}
-        <img src="${thumbnail}" alt="${name} thumbnail" class="project-image">
-        <div class="project-info">
-          <h3 class="project-title">
-            ${name}
-            <img src="<%= base_url %>/img/complexity/${complexity}.png" alt="Complexity ${complexity}/6" class="complexity-icon"  title="Complexity level of the project: ${complexity}/6" aria-label="Complexity level of the project ${complexity} out of 6">
-          </h3>
-          ${filteredTech.length > 0? `
-          <ul class="project-technologies">
-            ${filteredTech.map(tech => `<li>${tech}</li>`).join('')}
-          </ul>
-        ` : ''}
-          <p class="project-description">${description}</p>
-          <div class="project-links">
-            <a href="${repoUrl}" target="_blank" class="project-btn repo-btn">Repository</a>
-            ${demoUrl!== ''? 
-            `<button class="project-btn demo-btn" onclick="window.open('${demoUrl}', '_blank')">
-              Demo
-            </button>` : ''}
-          </div>
-          <p class="last-updated"><i>Last Updated: ${formattedDate}</i></p>
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-kicker reveal">
+          <span class="status-dot" aria-hidden="true"></span>
+          AI-native engineering for practical systems
         </div>
+        <h1 id="hero-title" class="reveal">
+          I turn complicated systems into <span>clear, useful software.</span>
+        </h1>
+        <div class="hero-bottom reveal">
+          <p>
+            I’m Aaron, an AI-native software engineer working across systems integration,
+            data products, and embedded experiences.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#work">Explore selected work <span aria-hidden="true">↘</span></a>
+            <a class="text-link" href="https://github.com/aaronyangello" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="hero-orbit" aria-hidden="true">
+          <span>systems</span><span>data</span><span>interfaces</span><span>experiments</span>
+        </div>
+      </section>
+
+      <section class="work-section" id="work" aria-labelledby="work-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">01 / Selected work</p>
+            <h2 id="work-title">Projects with range.</h2>
+          </div>
+          <p>From real-world integrations to odd, ambitious experiments—each one started with a problem worth untangling.</p>
+        </div>
+
+        <div class="featured-grid">
+          <% projects.filter((project) => project.featured).forEach((project, index) => { %>
+            <article class="featured-card featured-card-<%= index + 1 %> reveal-card">
+              <div class="card-topline">
+                <span><%= String(index + 1).padStart(2, '0') %></span>
+                <span><%= project.year %></span>
+              </div>
+              <div class="card-visual <%= project.image ? '' : 'card-visual-type' %>">
+                <% if (project.image) { %>
+                  <img src="<%= project.image %>" alt="" loading="lazy">
+                <% } else { %>
+                  <span aria-hidden="true"><%= project.name.charAt(0) %></span>
+                <% } %>
+              </div>
+              <div class="card-copy">
+                <div class="card-title-row">
+                  <h3><%= project.name %></h3>
+                  <% if (project.inProgress) { %><span class="status-pill">In progress</span><% } %>
+                </div>
+                <p><%= project.summary %></p>
+                <ul class="tech-list" aria-label="Technologies">
+                  <% project.technologies.forEach((technology) => { %><li><%= technology %></li><% }) %>
+                </ul>
+                <div class="card-links">
+                  <% if (project.repoUrl) { %><a href="<%= project.repoUrl %>" target="_blank" rel="noopener">Repository <span aria-hidden="true">↗</span></a><% } %>
+                  <% if (project.demoUrl) { %><a href="<%= project.demoUrl %>" target="_blank" rel="noopener">Watch demo <span aria-hidden="true">▶</span></a><% } %>
+                </div>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+
+      <section class="archive-section" id="archive" aria-labelledby="archive-title">
+        <div class="section-heading archive-heading">
+          <div>
+            <p class="eyebrow">02 / Project archive</p>
+            <h2 id="archive-title">More things I’ve built.</h2>
+          </div>
+          <div class="filters" aria-label="Filter projects">
+            <button type="button" class="filter-button is-active" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="filter-button" data-filter="systems" aria-pressed="false">Systems</button>
+            <button type="button" class="filter-button" data-filter="ai-data" aria-pressed="false">AI &amp; data</button>
+            <button type="button" class="filter-button" data-filter="apps" aria-pressed="false">Apps</button>
+            <button type="button" class="filter-button" data-filter="embedded" aria-pressed="false">Embedded</button>
+          </div>
+        </div>
+
+        <div class="archive-list" aria-live="polite">
+          <% projects.filter((project) => !project.featured).forEach((project) => { %>
+            <article class="archive-row" data-category="<%= project.category %>">
+              <div class="archive-year"><%= project.year %></div>
+              <div class="archive-copy">
+                <h3><%= project.name %></h3>
+                <p><%= project.summary %></p>
+              </div>
+              <ul class="archive-tech" aria-label="Technologies">
+                <% project.technologies.slice(0, 3).forEach((technology) => { %><li><%= technology %></li><% }) %>
+              </ul>
+              <div class="archive-links">
+                <% if (project.repoUrl) { %><a href="<%= project.repoUrl %>" target="_blank" rel="noopener" aria-label="<%= project.name %> repository">Code <span aria-hidden="true">↗</span></a><% } %>
+                <% if (project.demoUrl) { %><a href="<%= project.demoUrl %>" target="_blank" rel="noopener" aria-label="<%= project.name %> demo">Demo <span aria-hidden="true">↗</span></a><% } %>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+
+      <section class="contact-section" aria-labelledby="contact-title">
+        <p class="eyebrow">03 / Start a conversation</p>
+        <h2 id="contact-title">Have a thorny problem?<br><span>I’d like to hear about it.</span></h2>
+        <a class="button button-light" href="mailto:ayangello@gmail.com">ayangello@gmail.com <span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="current-year"></span> Aaron Yangello</p>
+      <div>
+        <a href="https://linkedin.com/in/aaronyangello" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/aaronyangello" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://huggingface.co/ayangello" target="_blank" rel="noopener">Hugging Face</a>
+        <a href="#top">Back to top ↑</a>
       </div>
-      `;
-      projectGrid.appendChild(card);
-    });
-  }
-
-  function toggleNav() {
-    const navLinks = document.querySelector('.nav-links');
-    navLinks.classList.toggle('open');
-  }
-
-</script>
-</body>
+    </footer>
+  </body>
 </html>
