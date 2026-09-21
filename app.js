@@ -1,78 +1,234 @@
 const express = require('express');
-const { google } = require('googleapis');
-const ejs = require('ejs');
-const dotenv = require('dotenv');
-dotenv.config();
-const fs = require('fs');
-const path = require('path');
 
 const app = express();
-app.use(express.json()); // For parsing application/json
-app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
-app.use(express.static('public')); // Serve static files from the 'public' directory
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header('Access-Control-Allow-Methods', 'GET');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    if ('OPTIONS' == req.method) {
-       res.sendStatus(200);
-     }
-     else {
-       next();
-     }});
+const PORT = process.env.PORT || 3000;
 
+const projects = [
+  {
+    name: 'AI Santa Phone',
+    summary: 'A single-purpose phone that calls Santa, backed by speech recognition, natural-language processing, and a microservice architecture.',
+    image: '/img/santa_phone_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/santa-phone',
+    demoUrl: '',
+    technologies: ['Python', 'Docker', 'SQL', 'AI/ML'],
+    category: 'ai-data',
+    year: '2024',
+    featured: true,
+    inProgress: true,
+  },
+  {
+    name: 'BlackBerry Radar Adapter',
+    summary: 'An integration adapter that connects fleet maintenance workflows with asset-location data and automates report processing.',
+    image: '/img/blackberry_adapter_icon.jpeg',
+    repoUrl: 'https://github.com/AaronYangello/BlackBerryRadarAdapter',
+    demoUrl: '',
+    technologies: ['Python', 'Systems Integration'],
+    category: 'systems',
+    year: '2024',
+    featured: true,
+    inProgress: false,
+  },
+  {
+    name: 'Wordle Scoreboard',
+    summary: 'A microservice-based app for tracking, comparing, and sharing Wordle scores with authentication, leaderboards, and real-time updates.',
+    image: null,
+    repoUrl: 'https://github.com/AaronYangello/wordle-scoreboard',
+    demoUrl: '',
+    technologies: ['Java', 'Docker', 'Next.js'],
+    category: 'apps',
+    year: '2025',
+    featured: true,
+    inProgress: true,
+  },
+  {
+    name: 'Nextdoor Data Analysis',
+    summary: 'A data pipeline that collects neighborhood posts, analyzes sentiment, and calculates resident satisfaction scores by town.',
+    image: '/img/nextdoor_analyzer_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/next-door-analyzer',
+    demoUrl: 'https://youtu.be/UkC2VhfTkeA',
+    technologies: ['Python', 'Data Analysis'],
+    category: 'ai-data',
+    year: '2023',
+    featured: true,
+    inProgress: false,
+  },
+  {
+    name: 'EEG Mind Reading Magician',
+    summary: 'A brain-computer interface that processes EEG signals to identify a participant’s selected playing card in under five minutes.',
+    image: '/img/eeg_magician_icon.png',
+    repoUrl: '',
+    demoUrl: 'https://youtu.be/t04jf4P-Rs8',
+    technologies: ['MATLAB', 'Python', 'Signal Processing'],
+    category: 'ai-data',
+    year: '2016',
+    featured: true,
+    inProgress: false,
+  },
+  {
+    name: 'Drone Delivery Simulator',
+    summary: 'A simulation of autonomous grocery-delivery drones coordinating orders from a central hub to customer locations.',
+    image: '/img/drone_delivery_simulator_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/drone-grocery-delivery-simulator',
+    demoUrl: 'https://youtu.be/svghXJbNGos',
+    technologies: ['Java', 'SQL', 'Docker'],
+    category: 'systems',
+    year: '2021',
+    featured: true,
+    inProgress: false,
+  },
+  {
+    name: 'Actress Portfolio Site',
+    summary: 'A responsive portfolio for headshots, reels, a résumé, and biography, with an intentionally lightweight content workflow.',
+    image: null,
+    repoUrl: 'https://github.com/AaronYangello/danayangelloNoCms',
+    demoUrl: 'https://danayangello-no-cms.vercel.app/',
+    technologies: ['Next.js', 'Tailwind CSS'],
+    category: 'apps',
+    year: '2025',
+  },
+  {
+    name: 'Portfolio Website',
+    summary: 'The site you are viewing: a focused, responsive showcase of selected software and experiments.',
+    image: '/img/portfolio_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/portfolio-website',
+    demoUrl: '',
+    technologies: ['JavaScript', 'Node.js', 'CSS'],
+    category: 'apps',
+    year: '2024',
+  },
+  {
+    name: 'Job Offer Comparison App',
+    summary: 'A collaborative Android app that helps job seekers compare offers across compensation and quality-of-life factors.',
+    image: '/img/job_comparison_icon.jpg',
+    repoUrl: 'https://github.com/AaronYangello/job-offer-comparison-app',
+    demoUrl: '',
+    technologies: ['Java', 'Android'],
+    category: 'apps',
+    year: '2022',
+  },
+  {
+    name: 'Household Appliance Survey',
+    summary: 'A collaborative web application for collecting structured data about appliance types, brands, and household usage.',
+    image: '/img/appliance_survey_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/household-appliance-survey',
+    demoUrl: '',
+    technologies: ['PHP', 'SQL', 'CSS'],
+    category: 'apps',
+    year: '2022',
+  },
+  {
+    name: 'Yangello Wedding Website',
+    summary: 'An event website that kept friends and family up to date and created a home for shared memories.',
+    image: '/img/yangello_wedding_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/YangelloWedding',
+    demoUrl: '',
+    technologies: ['PHP', 'HTML', 'CSS'],
+    category: 'apps',
+    year: '2021',
+  },
+  {
+    name: 'Skill Squatting Security Talk',
+    summary: 'A concise presentation of research into skill-squatting attacks against voice assistants.',
+    image: '/img/paper_presentation_icon.png',
+    repoUrl: '',
+    demoUrl: 'https://youtu.be/hjo9V2RZKzI',
+    technologies: ['Security', 'Research'],
+    category: 'systems',
+    year: '2023',
+  },
+  {
+    name: 'Embedded Battleship',
+    summary: 'The classic strategy game rebuilt on an embedded system with low-level programming techniques.',
+    image: '/img/embedded_battleship_icon.jpeg',
+    repoUrl: 'https://github.com/AaronYangello/embedded-battleship',
+    demoUrl: '',
+    technologies: ['C/C++', 'Embedded'],
+    category: 'embedded',
+    year: '2018',
+  },
+  {
+    name: 'Embedded Stick Runner',
+    summary: 'A compact embedded-system take on the Chrome Dino Runner game, built around a simple jump mechanic.',
+    image: '/img/stick_run_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/embedded-stick-runner',
+    demoUrl: '',
+    technologies: ['C/C++', 'Embedded'],
+    category: 'embedded',
+    year: '2018',
+  },
+  {
+    name: 'Underwater Image Color Corrector',
+    summary: 'MATLAB scripts that compensate for the loss of red and orange wavelengths in underwater photography.',
+    image: '/img/underwater_image_color_corrector_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/underwater-image-color-corrector',
+    demoUrl: '',
+    technologies: ['MATLAB', 'Image Processing'],
+    category: 'ai-data',
+    year: '2018',
+  },
+  {
+    name: 'Pet-Friendly Restaurant Simulator',
+    summary: 'An interactive management simulation for a restaurant serving both people and their pets.',
+    image: '/img/pet_friendly-restaurant-icon.png',
+    repoUrl: 'https://github.com/AaronYangello/pet-friendly-restaurant-simulator',
+    demoUrl: '',
+    technologies: ['Java', 'Simulation'],
+    category: 'apps',
+    year: '2018',
+  },
+  {
+    name: 'Coffee DB',
+    summary: 'A desktop application for managing and querying a relational coffee database.',
+    image: '/img/coffee_db_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/coffee-db',
+    demoUrl: '',
+    technologies: ['Java', 'SQL'],
+    category: 'apps',
+    year: '2017',
+  },
+  {
+    name: 'Calendar App',
+    summary: 'A lightweight desktop application for managing personal schedules.',
+    image: '/img/calendar_app_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/calendar-app',
+    demoUrl: '',
+    technologies: ['Java'],
+    category: 'apps',
+    year: '2018',
+  },
+  {
+    name: 'Text File Manipulation Tool',
+    summary: 'A command-line utility that applies common transformations to text files.',
+    image: '/img/tfmt_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/txt-manipulation-tool',
+    demoUrl: '',
+    technologies: ['Java', 'CLI'],
+    category: 'systems',
+    year: '2022',
+  },
+  {
+    name: 'Kilometers to Miles Converter',
+    summary: 'A focused JavaFX utility for converting distances from kilometers to miles.',
+    image: '/img/km_to_mi_icon.png',
+    repoUrl: 'https://github.com/AaronYangello/kilometer-to-miles-converter',
+    demoUrl: '',
+    technologies: ['Java', 'JavaFX'],
+    category: 'apps',
+    year: '2017',
+  },
+];
+
+app.disable('x-powered-by');
 app.set('view engine', 'ejs');
 app.set('views', './views');
+app.use(express.static('public'));
 
-const SPREADSHEET_ID = '1GMIq1X234k00POpYZ90r5h4szDFkFk0BY50DKNv9mgA';
-const RANGE = 'Projects!A2:I'; // Extended range to include date and complexity
-const PORT = 3000;
-
-// Initialize Google Sheets API
-async function initGoogleSheetsAPI() {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: process.env.GOOGLE_API_KEY,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-  });
-  const client = await auth.getClient();
-  google.options({ auth: client });
-  return google.sheets('v4');
-}
-
-// Load projects from Google Sheets
-async function loadProjects() {
-  try {
-    const gsapi = await initGoogleSheetsAPI();
-    const response = await gsapi.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: RANGE,
-    });
-    return response.data.values;
-  } catch (error) {
-    console.error('Error loading projects:', error);
-    return [];
-  }
-}
-
-app.get('/', async (req, res) => { 
-  const projectsData = await loadProjects();
-  const base_url = process.env.BASE_URL;
-  res.render('index', {root: __dirname, base_url:base_url, projects: JSON.stringify(projectsData[0])}); 
-});
-
-// Endpoint to serve projects data
-app.get('/projects', async (req, res) => {
-  try {
-    const projectsData = await loadProjects();
-    res.json(projectsData);
-  } catch (error) {
-    console.error('Error serving projects:', error);
-    res.status(500).json({ message: 'Failed to load projects' });
-  }
+app.get('/', (req, res) => {
+  res.render('index', { projects });
 });
 
 app.get('/resume', (req, res) => {
-  res.redirect(process.env.BASE_URL + '/resume.pdf');
+  res.redirect('/resume.pdf');
 });
 
 app.get('/github', (req, res) => {
@@ -84,5 +240,5 @@ app.get('/linkedin', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Portfolio available at http://localhost:${PORT}`);
 });
